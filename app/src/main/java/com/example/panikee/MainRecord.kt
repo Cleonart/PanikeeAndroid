@@ -49,7 +49,7 @@ class MainRecord : AppCompatActivity(){
         setContentView(R.layout.activity_record)
 
         //output = Environment.getExternalStorageDirectory().absolutePath + "/" + filename
-
+        initInterferenceV2()
         jlibrosaTest()
         /*
         btnRecord = findViewById(R.id.btnRecord)

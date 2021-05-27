@@ -39,6 +39,7 @@ class TensorflowLite {
          * Load options also with threads of 2
          * **/
         val tfliteModel: MappedByteBuffer = FileUtil.loadMappedFile(ctx, getModelPath())
+        tfliteOptions = Options()
         tfliteOptions.setNumThreads(2)
         tflite = Interpreter(tfliteModel, tfliteOptions)
 
