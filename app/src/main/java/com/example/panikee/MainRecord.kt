@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.panikee.audioProcessing.TensorflowLite
 import com.jlibrosa.audio.JLibrosa
 import com.ml.quaterion.noiseClassification.Recognition
 import org.tensorflow.lite.DataType
@@ -41,6 +42,8 @@ class MainRecord : AppCompatActivity(){
     private var filename:String = "recorder.mp3"
     private lateinit var output:String
 
+    private lateinit var tfliteV2 : TensorflowLite
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_record)
@@ -59,6 +62,11 @@ class MainRecord : AppCompatActivity(){
             stopRecording()
         }
          */
+    }
+
+    private fun initInterferenceV2(){
+        tfliteV2 = TensorflowLite()
+        tfliteV2.init(this)
     }
 
     private fun initializingInterference(meanMFCCValues : FloatArray) : String?{
@@ -179,7 +187,9 @@ class MainRecord : AppCompatActivity(){
 
         Log.d("JLIBROSATEST",".......")
         Log.d("JLIBROSATEST","Size of MFCC Feature Values: (" + mfccValues.size + " , " + mfccValues[0].size + " )")
-        Log.d("JLIBROSATEST", initializingInterference(meanMFCCValues).toString())
+
+        tfliteV2.predict(this, meanMFCCValues)
+        //Log.d("JLIBROSATEST", initializingInterference(meanMFCCValues).toString())
     }
 
     private fun startRecording(){
