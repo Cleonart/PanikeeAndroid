@@ -1,4 +1,4 @@
-package com.ml.quaterion.noiseClassification
+package com.example.panikee.audioProcessing
 
 
 class Recognition {

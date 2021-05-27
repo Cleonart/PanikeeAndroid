@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.panikee.audioProcessing.TensorflowLite
 import com.jlibrosa.audio.JLibrosa
-import com.ml.quaterion.noiseClassification.Recognition
+import com.example.panikee.audioProcessing.Recognition
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.support.common.FileUtil
@@ -188,8 +188,9 @@ class MainRecord : AppCompatActivity(){
         Log.d("JLIBROSATEST",".......")
         Log.d("JLIBROSATEST","Size of MFCC Feature Values: (" + mfccValues.size + " , " + mfccValues[0].size + " )")
 
-        tfliteV2.predict(this, meanMFCCValues)
-        //Log.d("JLIBROSATEST", initializingInterference(meanMFCCValues).toString())
+        tfliteV2.predict(meanMFCCValues)
+        val output = tfliteV2.getOutputAsLabel()
+        Log.d("JLIBROSATEST", output.toString())
     }
 
     private fun startRecording(){

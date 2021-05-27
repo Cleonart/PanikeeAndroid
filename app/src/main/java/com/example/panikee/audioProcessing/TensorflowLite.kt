@@ -1,16 +1,22 @@
 package com.example.panikee.audioProcessing
 
 import android.content.Context
+import android.util.Log
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.Interpreter.Options
 import org.tensorflow.lite.support.common.FileUtil
+import org.tensorflow.lite.support.common.TensorProcessor
+import org.tensorflow.lite.support.common.ops.NormalizeOp
+import org.tensorflow.lite.support.label.TensorLabel
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.MappedByteBuffer
 
 class TensorflowLite {
 
+    private lateinit var context: Context
     var predictedResult: String? = "unknown"
 
     /** TFLite Interpreter **/
@@ -34,6 +40,9 @@ class TensorflowLite {
 
     fun init(ctx:Context){
 
+        /** Assign Context */
+        context = ctx
+
         /**
          * Step [1] Load the TFLite Model in MappedByteBuffer
          * Load options also with threads of 2
@@ -54,7 +63,7 @@ class TensorflowLite {
         probabilityDataType = tflite.getOutputTensor(probabilityTensorIndex).dataType()
     }
 
-    fun predict(ctx: Context, meanMFCCValues : FloatArray){
+    fun predict(meanMFCCValues : FloatArray){
 
         /** Step [3] Transform the MFCC 1D Float Buffer into Desired Dimenstion Tensor **/
         inBuffer = TensorBuffer.createDynamic(imageDataType)
@@ -67,7 +76,44 @@ class TensorflowLite {
          * To Get Probability Values
          * **/
         tflite.run(inpBuffer, outputTensorBuffer.buffer)
+    }
 
+    fun getOutputAsLabel() : String?{
+
+        var predictedResult: String? = "unknown"
+        var labelProcess : MFCCProcessing = MFCCProcessing()
+
+        //Code to transform the probability predictions into label values
+        val ASSOCIATED_AXIS_LABELS = "labels.txt"
+        var associatedAxisLabels: List<String?>? = null
+        try {
+            associatedAxisLabels = FileUtil.loadLabels(context, ASSOCIATED_AXIS_LABELS)
+        } catch (e: IOException) {
+            Log.e("tfliteSupport", "Error reading label file", e)
+        }
+
+        //Tensor processor for processing the probability values and to sort them based on the descending order of probabilities
+        val probabilityProcessor: TensorProcessor = TensorProcessor.Builder()
+            .add(NormalizeOp(0.0f, 255.0f)).build()
+        if (null != associatedAxisLabels) {
+            // Map of labels and their corresponding probability
+            val labels = TensorLabel(
+                associatedAxisLabels,
+                probabilityProcessor.process(outputTensorBuffer)
+            )
+
+            // Create a map to access the result based on label
+            val floatMap: Map<String, Float> =
+                labels.getMapWithFloatValue()
+
+            //function to retrieve the top K probability values, in this case 'k' value is 1.
+            //retrieved values are storied in 'Recognition' object with label details.
+            val resultPrediction: List<Recognition>? = labelProcess.getTopKProbability(floatMap);
+
+            //get the top 1 prediction from the retrieved list of top predictions
+            predictedResult = labelProcess.getPredictedValue(resultPrediction)
+        }
+        return predictedResult
     }
 
     /** [TENSORFLOW] Get Model Path **/
