@@ -51,6 +51,7 @@ class MainRecord : AppCompatActivity(){
         //output = Environment.getExternalStorageDirectory().absolutePath + "/" + filename
         initInterferenceV2()
         jlibrosaTest()
+
         /*
         btnRecord = findViewById(R.id.btnRecord)
         btnRecord.setOnClickListener {
@@ -67,102 +68,6 @@ class MainRecord : AppCompatActivity(){
     private fun initInterferenceV2(){
         tfliteV2 = TensorflowLite()
         tfliteV2.init(this)
-    }
-
-    private fun initializingInterference(meanMFCCValues : FloatArray) : String?{
-
-        var predictedResult: String? = "unknown"
-
-        /**
-         * Step [1] Load the TFLite Model in MappedByteBuffer
-         * Load options also with threads of 2
-         * **/
-        val tfliteModel: MappedByteBuffer = FileUtil.loadMappedFile(this, getModelPath())
-        val tflite: Interpreter
-        val tfliteOptions = Interpreter.Options()
-        tfliteOptions.setNumThreads(2)
-        tflite = Interpreter(tfliteModel, tfliteOptions)
-
-        /**
-         * Step [2] Obtain Input and Output Tensor Size Required by Model
-         * for urban sound classification, input tensor should be of 1x40x1x1 shape
-         * for Panikee classification, input tensor should be of 1x16x16x1 shape
-         * **/
-        val imageTensorIndex = 0  // Input Tensor
-        val imageShape = tflite.getInputTensor(imageTensorIndex).shape()
-        val imageDataType: DataType = tflite.getInputTensor(imageTensorIndex).dataType()
-        val probabilityTensorIndex = 0  // Output Tensor
-        val probabilityShape = tflite.getOutputTensor(probabilityTensorIndex).shape()
-        val probabilityDataType: DataType = tflite.getOutputTensor(probabilityTensorIndex).dataType()
-
-        /** Step [3] Transform the MFCC 1D Float Buffer into Desired Dimenstion Tensor **/
-        val inBuffer: TensorBuffer = TensorBuffer.createDynamic(imageDataType)
-        inBuffer.loadArray(meanMFCCValues, imageShape)
-        val inpBuffer: ByteBuffer = inBuffer.getBuffer()
-        val outputTensorBuffer: TensorBuffer = TensorBuffer.createFixedSize(probabilityShape, probabilityDataType)
-
-        /**
-         * Step[4] Run the Predictions with Input and Output Buffer Tensor
-         * To Get Probability Values
-         * **/
-        tflite.run(inpBuffer, outputTensorBuffer.getBuffer())
-
-        //Code to transform the probability predictions into label values
-        val ASSOCIATED_AXIS_LABELS = "labels.txt"
-        var associatedAxisLabels: List<String?>? = null
-        try {
-            associatedAxisLabels = FileUtil.loadLabels(this, ASSOCIATED_AXIS_LABELS)
-        } catch (e: IOException) {
-            Log.e("tfliteSupport", "Error reading label file", e)
-        }
-
-        //Tensor processor for processing the probability values and to sort them based on the descending order of probabilities
-        val probabilityProcessor: TensorProcessor = TensorProcessor.Builder()
-            .add(NormalizeOp(0.0f, 255.0f)).build()
-        if (null != associatedAxisLabels) {
-            // Map of labels and their corresponding probability
-            val labels = TensorLabel(
-                associatedAxisLabels,
-                probabilityProcessor.process(outputTensorBuffer)
-            )
-
-            // Create a map to access the result based on label
-            val floatMap: Map<String, Float> =
-                labels.getMapWithFloatValue()
-
-            //function to retrieve the top K probability values, in this case 'k' value is 1.
-            //retrieved values are storied in 'Recognition' object with label details.
-            val resultPrediction: List<Recognition>? = getTopKProbability(floatMap);
-
-            //get the top 1 prediction from the retrieved list of top predictions
-            predictedResult = getPredictedValue(resultPrediction)
-        }
-        return predictedResult
-    }
-
-    fun getPredictedValue(predictedList:List<Recognition>?): String?{
-        val top1PredictedValue : Recognition? = predictedList?.get(0)
-        return top1PredictedValue?.getTitle()
-    }
-
-    /** Gets the top-k results.  */
-    protected fun getTopKProbability(labelProb: Map<String, Float>): List<Recognition>? {
-        // Find the best classifications.
-        val MAX_RESULTS: Int = 1
-        val pq: PriorityQueue<Recognition> = PriorityQueue(
-            MAX_RESULTS,
-            Comparator<Recognition> { lhs, rhs -> // Intentionally reversed to put high confidence at the head of the queue.
-                java.lang.Float.compare(rhs.getConfidence(), lhs.getConfidence())
-            })
-        for (entry in labelProb.entries) {
-            pq.add(Recognition("" + entry.key, entry.key, entry.value))
-        }
-        val recognitions: ArrayList<Recognition> = ArrayList()
-        val recognitionsSize: Int = Math.min(pq.size, MAX_RESULTS)
-        for (i in 0 until recognitionsSize) {
-            recognitions.add(pq.poll())
-        }
-        return recognitions
     }
 
     private fun jlibrosaTest(){
