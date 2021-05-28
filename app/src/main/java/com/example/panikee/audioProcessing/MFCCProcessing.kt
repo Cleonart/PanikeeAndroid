@@ -1,10 +1,60 @@
 package com.example.panikee.audioProcessing
 
+import android.content.ContentValues
+import android.os.Environment
+import android.util.Log
+import com.jlibrosa.audio.JLibrosa
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.ArrayList
 
 class MFCCProcessing {
+
+    private lateinit var mfccValues : Array<FloatArray>
+    private lateinit var meanMFCCValues: FloatArray
+
+    fun process(){
+
+        /**
+         * Step 1 Create the options and Jlibrosa Instance
+         * from Jlibros() class
+         */
+        val audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/audioData/children.wav"
+        val defaultSampleRate = -1    //-1 value implies the method to use default sample rate
+        val defaultAudioDuration = -1 //-1 value implies the method to process complete audio duration
+        val jLibrosa = JLibrosa()
+
+        /**
+         * To Read The Magnitude Values of Audio Files
+         * equivalent to librosa.load('../audioFiles/1995-1826-0003.wav', sr=None) function
+         */
+        val audioFeaturesValues = jLibrosa.loadAndRead(audioFilePath, defaultSampleRate, defaultAudioDuration)
+
+        /**
+         * To read the no of frames present in audio file
+         * To read sample rate of audio file
+         * To read number of channels in audio file
+         */
+        val nNoOfFrames = jLibrosa.noOfFrames
+        val sampleRate = jLibrosa.sampleRate
+        val noOfChannels = jLibrosa.noOfChannels
+        val buffer = Array(noOfChannels) { DoubleArray(nNoOfFrames) }
+
+        /**
+         * Process the MFCC
+         * **/
+        mfccValues = jLibrosa.generateMFCCFeatures(audioFeaturesValues, sampleRate, 40)
+        meanMFCCValues = jLibrosa.generateMeanMFCCFeatures(mfccValues, mfccValues.size, mfccValues[0].size)
+        Log.d("MFCC_PROCESSING","Size of MFCC Feature Values: (" + mfccValues.size + " , " + mfccValues[0].size + " )")
+    }
+
+    fun getMFCCValues() : Array<FloatArray>{
+        return mfccValues
+    }
+
+    fun getMeanMFCCValues() : FloatArray{
+        return meanMFCCValues
+    }
 
     /** Gets the predicted value and map it on Recognition Class */
     fun getPredictedValue(predictedList:List<Recognition>?): String?{

@@ -81,36 +81,43 @@ class TensorflowLite {
     fun getOutputAsLabel() : String?{
 
         var predictedResult: String? = "unknown"
-        var labelProcess : MFCCProcessing = MFCCProcessing()
+        val labelProcess = MFCCProcessing()
 
-        //Code to transform the probability predictions into label values
-        val ASSOCIATED_AXIS_LABELS = "labels.txt"
+        // Transform the probability predictions into label values
+        val associatedAxisLabelFilename = "labels.txt"
         var associatedAxisLabels: List<String?>? = null
         try {
-            associatedAxisLabels = FileUtil.loadLabels(context, ASSOCIATED_AXIS_LABELS)
-        } catch (e: IOException) {
+            associatedAxisLabels = FileUtil.loadLabels(context, associatedAxisLabelFilename)
+        }
+        catch (e: IOException) {
             Log.e("tfliteSupport", "Error reading label file", e)
         }
 
-        //Tensor processor for processing the probability values and to sort them based on the descending order of probabilities
+        /** Tensor Processor for processing the probability values
+         *  and sort them based on descending order of probabilites
+         * */
         val probabilityProcessor: TensorProcessor = TensorProcessor.Builder()
             .add(NormalizeOp(0.0f, 255.0f)).build()
+
         if (null != associatedAxisLabels) {
+
             // Map of labels and their corresponding probability
             val labels = TensorLabel(
                 associatedAxisLabels,
                 probabilityProcessor.process(outputTensorBuffer)
             )
 
-            // Create a map to access the result based on label
+            /** Create a map to access the result based on label */
             val floatMap: Map<String, Float> =
-                labels.getMapWithFloatValue()
+                labels.mapWithFloatValue
 
-            //function to retrieve the top K probability values, in this case 'k' value is 1.
-            //retrieved values are storied in 'Recognition' object with label details.
-            val resultPrediction: List<Recognition>? = labelProcess.getTopKProbability(floatMap);
+            /**
+             * Function to retrieve the Top K Probability Values, in this case 'K' value is 1
+             * Retrieved values are storied in 'Recognition' object with label detail
+             * */
+            val resultPrediction: List<Recognition>? = labelProcess.getTopKProbability(floatMap)
 
-            //get the top 1 prediction from the retrieved list of top predictions
+            /** Get the top 1 prediction from retrieved list of top predictions */
             predictedResult = labelProcess.getPredictedValue(resultPrediction)
         }
         return predictedResult
