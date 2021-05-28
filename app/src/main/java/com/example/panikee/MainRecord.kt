@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.panikee.audioProcessing.MFCCProcessing
 import com.example.panikee.audioProcessing.TensorflowLite
 import com.jlibrosa.audio.JLibrosa
 import com.example.panikee.audioProcessing.Recognition
@@ -50,7 +51,7 @@ class MainRecord : AppCompatActivity(){
 
         //output = Environment.getExternalStorageDirectory().absolutePath + "/" + filename
         initInterferenceV2()
-        jlibrosaTest()
+        predictionTest()
 
         /*
         btnRecord = findViewById(R.id.btnRecord)
@@ -70,30 +71,10 @@ class MainRecord : AppCompatActivity(){
         tfliteV2.init(this)
     }
 
-    private fun jlibrosaTest(){
-        val audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/audioData/children.wav"
-        val defaultSampleRate = -1    //-1 value implies the method to use default sample rate
-        val defaultAudioDuration = -1 //-1 value implies the method to process complete audio duration
-        val jLibrosa = JLibrosa()
-
-        /* To read the magnitude values of audio files - equivalent to librosa.load('../audioFiles/1995-1826-0003.wav', sr=None) function */
-        val audioFeaturesValues = jLibrosa.loadAndRead(audioFilePath, defaultSampleRate, defaultAudioDuration)
-
-        /* To read the no of frames present in audio file*/
-        /* To read sample rate of audio file */
-        /* To read number of channels in audio file */
-        val nNoOfFrames = jLibrosa.noOfFrames
-        val sampleRate = jLibrosa.sampleRate
-        val noOfChannels = jLibrosa.noOfChannels
-        val buffer = Array(noOfChannels) { DoubleArray(nNoOfFrames) }
-
-        val mfccValues = jLibrosa.generateMFCCFeatures(audioFeaturesValues, sampleRate, 40)
-        val meanMFCCValues = jLibrosa.generateMeanMFCCFeatures(mfccValues, mfccValues.size, mfccValues[0].size)
-
-        Log.d("JLIBROSATEST",".......")
-        Log.d("JLIBROSATEST","Size of MFCC Feature Values: (" + mfccValues.size + " , " + mfccValues[0].size + " )")
-
-        tfliteV2.predict(meanMFCCValues)
+    private fun predictionTest(){
+        val mfcc = MFCCProcessing()
+        mfcc.process()
+        tfliteV2.predict(mfcc.getMeanMFCCValues())
         val output = tfliteV2.getOutputAsLabel()
         Log.d("JLIBROSATEST", output.toString())
     }

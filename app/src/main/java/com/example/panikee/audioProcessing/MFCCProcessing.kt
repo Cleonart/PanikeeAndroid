@@ -19,7 +19,7 @@ class MFCCProcessing {
          * Step 1 Create the options and Jlibrosa Instance
          * from Jlibros() class
          */
-        val audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/audioData/children.wav"
+        val audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/audioData/dog.wav"
         val defaultSampleRate = -1    //-1 value implies the method to use default sample rate
         val defaultAudioDuration = -1 //-1 value implies the method to process complete audio duration
         val jLibrosa = JLibrosa()
