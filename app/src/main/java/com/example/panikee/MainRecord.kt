@@ -4,7 +4,6 @@ import android.content.pm.PackageManager
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
@@ -13,21 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.panikee.audioProcessing.MFCCProcessing
 import com.example.panikee.audioProcessing.TensorflowLite
-import com.jlibrosa.audio.JLibrosa
-import com.example.panikee.audioProcessing.Recognition
-import org.tensorflow.lite.DataType
-import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.support.common.FileUtil
-import org.tensorflow.lite.support.common.TensorProcessor
-import org.tensorflow.lite.support.common.ops.NormalizeOp
-import org.tensorflow.lite.support.label.TensorLabel
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.IOException
-import java.nio.ByteBuffer
-import java.nio.MappedByteBuffer
-import java.util.*
-import kotlin.Comparator
-import kotlin.collections.ArrayList
 
 
 class MainRecord : AppCompatActivity(){
@@ -50,8 +35,8 @@ class MainRecord : AppCompatActivity(){
         setContentView(R.layout.activity_record)
 
         //output = Environment.getExternalStorageDirectory().absolutePath + "/" + filename
-        initInterferenceV2()
-        predictionTest()
+        //initInterferenceV2()
+        //predictionTest()
 
         /*
         btnRecord = findViewById(R.id.btnRecord)
@@ -74,9 +59,9 @@ class MainRecord : AppCompatActivity(){
     private fun predictionTest(){
         val mfcc = MFCCProcessing()
         mfcc.process()
-        tfliteV2.predict(mfcc.getMeanMFCCValues())
-        val output = tfliteV2.getOutputAsLabel()
-        Log.d("JLIBROSATEST", output.toString())
+        //tfliteV2.predict(mfcc.getMFCCValues())
+        //val output = tfliteV2.getOutputAsLabel()
+        //Log.d("JLIBROSATEST", output.toString())
     }
 
     private fun startRecording(){

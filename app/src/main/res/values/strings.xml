@@ -10,6 +10,10 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
+    <string name="desc_button_siren">Siren Button</string>
+    <string name="desc_button_bell">Bell Button</string>
+    <string name="desc_button_cog">Cog Button</string>
+
     <!-- API -->
     <string name="mapbox_access_token">pk.eyJ1IjoienJlZGhhcmQiLCJhIjoiY2s4dGI0bzhxMDJjdzNsbGtmOXVtNDNvciJ9.kLnTWH6orAW2JwEn44b73g</string>
 </resources>

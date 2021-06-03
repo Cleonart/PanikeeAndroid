@@ -13,7 +13,6 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.MappedByteBuffer
-
 class TensorflowLite {
 
     private lateinit var context: Context
@@ -63,11 +62,11 @@ class TensorflowLite {
         probabilityDataType = tflite.getOutputTensor(probabilityTensorIndex).dataType()
     }
 
-    fun predict(meanMFCCValues : FloatArray){
+    fun predict(meanMFCCValues: Array<FloatArray>){
 
         /** Step [3] Transform the MFCC 1D Float Buffer into Desired Dimenstion Tensor **/
         inBuffer = TensorBuffer.createDynamic(imageDataType)
-        inBuffer.loadArray(meanMFCCValues, imageShape)
+        //inBuffer.loadArray(meanMFCCValues, imageShape)
         inpBuffer = inBuffer.buffer
         outputTensorBuffer = TensorBuffer.createFixedSize(probabilityShape, probabilityDataType)
 

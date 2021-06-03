@@ -19,9 +19,9 @@ class MFCCProcessing {
          * Step 1 Create the options and Jlibrosa Instance
          * from Jlibros() class
          */
-        val audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/audioData/dog.wav"
-        val defaultSampleRate = -1    //-1 value implies the method to use default sample rate
-        val defaultAudioDuration = -1 //-1 value implies the method to process complete audio duration
+        val audioFilePath = Environment.getExternalStorageDirectory().absolutePath + "/audioData/0.wav"
+        val defaultSampleRate = 8000    //-1 value implies the method to use default sample rate
+        val defaultAudioDuration = 100   //-1 value implies the method to process complete audio duration
         val jLibrosa = JLibrosa()
 
         /**
@@ -38,12 +38,15 @@ class MFCCProcessing {
         val nNoOfFrames = jLibrosa.noOfFrames
         val sampleRate = jLibrosa.sampleRate
         val noOfChannels = jLibrosa.noOfChannels
-        val buffer = Array(noOfChannels) { DoubleArray(nNoOfFrames) }
+
+        Log.d("MFCC_PROCESSING", "Signal : " + audioFeaturesValues[0].toString())
+        Log.d("MFCC_PROCESSING", "Sample Rate : $sampleRate")
+        Log.d("MFCC_PROCESSING", "Size of MFCC Feature Values: ($nNoOfFrames )")
 
         /**
          * Process the MFCC
          * **/
-        mfccValues = jLibrosa.generateMFCCFeatures(audioFeaturesValues, sampleRate, 40)
+        mfccValues = jLibrosa.generateMFCCFeatures(audioFeaturesValues, 8000, 32)
         meanMFCCValues = jLibrosa.generateMeanMFCCFeatures(mfccValues, mfccValues.size, mfccValues[0].size)
         Log.d("MFCC_PROCESSING","Size of MFCC Feature Values: (" + mfccValues.size + " , " + mfccValues[0].size + " )")
     }
