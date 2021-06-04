@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="25dp"
+        android:id="@+id/contact_add_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:rotation="10"
+        android:src="@drawable/phone"/>
+
+    <TextView
+        app:layout_constraintTop_toBottomOf="@id/contact_add_image"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/contact_add_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NEW FRIENDS"
+        android:fontFamily="@font/passengersansblack"
+        android:textColor="@color/belize_hole"
+        android:textSize="28sp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        app:layout_constraintTop_toBottomOf="@id/contact_add_title"
+        android:id="@+id/contact_add_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Make sure to input right person to be contacted when you're in distress"
+        android:fontFamily="@font/passengersansregular"
+        android:textSize="16sp"
+        android:lineHeight="22dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"/>
+
+    <EditText
+        app:layout_constraintTop_toBottomOf="@id/contact_add_subtitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/contact_add_contact_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:maxLength="10"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="20dp"
+        android:background="@android:color/transparent"
+        android:hint="Enter Name"
+        android:fontFamily="@font/passengersanslight"
+        android:textSize="32sp"/>
+
+    <EditText
+        app:layout_constraintTop_toBottomOf="@id/contact_add_contact_name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/contact_add_contact_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:maxLength="15"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="20dp"
+        android:background="@android:color/transparent"
+        android:hint="Enter Number"
+        android:fontFamily="@font/passengersanslight"
+        android:textSize="32sp"/>
+
+    <Button
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/contact_add_submit"
+        android:id="@+id/contact_add_cancel"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textColor="@android:color/holo_red_dark"
+        android:fontFamily="@font/passengersansbold"
+        android:background="@android:color/transparent"/>
+
+    <Button
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/contact_add_submit"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Friend"
+        android:fontFamily="@font/passengersansbold"
+        android:backgroundTint="@color/belize_hole"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

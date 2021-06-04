@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.panikee.audioProcessing.audioPermission
+import com.example.panikee.fragments.BottomSheet_Contact
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -48,20 +49,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         super.onCreate(savedInstanceState)
 
         // Mapbox token is configured here
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-
         // Set content view to where the maps is available
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         setContentView(R.layout.main)
+        mapView = findViewById(R.id.mapView)
+        mapView.onCreate(savedInstanceState)
+        mapView.getMapAsync(this)
 
+        buttonInitializing()
+        classifierInitializing()
+    }
+
+    /** Initialize Button With The Click Listener */
+    private fun buttonInitializing(){
+        /** Contact Button */
         contactButton = findViewById(R.id.bell)
         contactButton.setOnClickListener {
-            val intent = Intent(this, ContactActivity::class.java)
-            startActivity(intent)
+            val fragmentContact = BottomSheet_Contact()
+            fragmentContact.show(supportFragmentManager, "ContactBottomSheetDialog")
         }
+        /** Settings Button */
+    }
 
-        // Audio for Sound Classifier
-        if( audioPermission().checkAudioPermission(this, this)){
-            tfclassifier = SoundClassifier(this, SoundClassifier.Options()).also {
+    /** Initialize Audio Classifer */
+    private fun classifierInitializing(){
+        if(audioPermission().checkAudioPermission(this, this)){
+            tfclassifier = SoundClassifier(this,
+                SoundClassifier.Options()).also {
                 it.lifecycleOwner = this
             }
             tfclassifier.start()
@@ -71,11 +85,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         tfclassifier.probabilities.observe(this) { resultMap ->
             val probability = resultMap[labelName]
             Log.d("Classifier", probability.toString())
+            val message = "I'm in distress, please call me, my position is "
         }
-
-        mapView = findViewById(R.id.mapView)
-        mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync(this)
     }
 
     override fun onMapReady(mbx: MapboxMap) {
@@ -133,11 +144,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         locationEngine.requestLocationUpdates(request, callback, mainLooper)
         locationEngine.getLastLocation(callback)
     }
-
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
         TODO("Not yet implemented")
     }
-
     override fun onPermissionResult(granted: Boolean) {
         if (granted){
             enableLocationComponent(mapboxMap.style)
@@ -146,7 +155,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         Toast.makeText(this, "Permission Disabled", Toast.LENGTH_SHORT).show()
         finish()
     }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray){
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }

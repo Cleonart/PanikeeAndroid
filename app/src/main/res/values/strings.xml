@@ -16,4 +16,10 @@
 
     <!-- API -->
     <string name="mapbox_access_token">pk.eyJ1IjoienJlZGhhcmQiLCJhIjoiY2s4dGI0bzhxMDJjdzNsbGtmOXVtNDNvciJ9.kLnTWH6orAW2JwEn44b73g</string>
+
+    <!-- Fragment Contact -->
+    <string name="fragment_contact_name">Contact Name</string>
+    <string name="fragment_contact_number">Contact Number</string>
+    <string name="fragment_contact_button_remove">REMOVE</string>
+
 </resources>
