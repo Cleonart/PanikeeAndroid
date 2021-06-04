@@ -33,12 +33,11 @@ class BottomSheetContactAdapter(ctv : Activity?) : RecyclerView.Adapter<BottomSh
         sampleData = mutableList
     }
 
-    fun deleteFriend(position : Int){
+    private fun deleteFriend(position : Int){
         sampleData.removeAt(position)
-        val preferences = PreferenceManager.getDefaultSharedPreferences(act).edit()
-        preferences.putString("friends", Gson().toJson(sampleData)).apply()
-        notifyDataSetChanged()
+        FriendsPreferencesAdapter().update(act, "friends", sampleData)
         Toast.makeText(act, "Success removing friend", Toast.LENGTH_SHORT).show()
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: BottomSheetContactAdapter.ViewHolder, position: Int) {
