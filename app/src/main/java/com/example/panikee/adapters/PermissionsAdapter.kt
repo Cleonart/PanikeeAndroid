@@ -1,4 +1,4 @@
-package com.example.panikee.audioProcessing
+package com.example.panikee.adapters
 
 import android.app.Activity
 import android.content.Context
@@ -6,10 +6,9 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class audioPermission {
+class PermissionsAdapter {
 
-    fun checkAudioPermission(act:Activity, ctx: Context): Boolean{
-
+    fun check(act: Activity, ctx: Context): Boolean{
         if (checkPermissionFromDevice(ctx)){
             return true;
         }
@@ -17,7 +16,7 @@ class audioPermission {
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
             android.Manifest.permission.RECORD_AUDIO,
             android.Manifest.permission.SEND_SMS)
-            ActivityCompat.requestPermissions(act, permissions, 0)
+        ActivityCompat.requestPermissions(act, permissions, 0)
         return false;
     }
 

@@ -10,6 +10,7 @@ import com.google.gson.JsonParser
 
 class FriendsPreferencesAdapter {
 
+    /** Settings for passing update to SharedPreferences */
     fun update(ctx: Activity?, keyName : String, data: Any){
         val preferences = PreferenceManager.getDefaultSharedPreferences(ctx).edit()
         preferences.putString(keyName, Gson().toJson(data)).apply()
@@ -19,12 +20,15 @@ class FriendsPreferencesAdapter {
         val preferences = PreferenceManager.getDefaultSharedPreferences(ctx)
         val jsonString = preferences.getString("friends", null)
         val mutableList : MutableList<Contact> = mutableListOf()
-        val jsonArray : JsonArray = JsonParser().parse(jsonString).asJsonArray
-        for(jsonElement : JsonElement in jsonArray){
-            val cyx : Contact = Gson().fromJson(jsonElement, Contact::class.java)
-            mutableList.add(cyx)
+        if(jsonString != null){
+            val jsonArray : JsonArray = JsonParser().parse(jsonString).asJsonArray
+            for(jsonElement : JsonElement in jsonArray){
+                val cyx : Contact = Gson().fromJson(jsonElement, Contact::class.java)
+                mutableList.add(cyx)
+            }
+            return mutableList
         }
-        return mutableList
+        return mutableListOf()
     }
 
 }

@@ -3,17 +3,17 @@ package com.example.panikee
 // import all necessary plugins
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.panikee.adapters.PermissionsAdapter
+import com.example.panikee.adapters.SMSAdapter
 import com.example.panikee.audioProcessing.audioPermission
-import com.example.panikee.fragments.BottomSheet_Contact
+import com.example.panikee.fragments.BottomSheetContact
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -22,34 +22,33 @@ import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
-import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.maps.*
 import org.tensorflow.lite.examples.soundclassifier.SoundClassifier
 import java.lang.ref.WeakReference
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener{
 
     private lateinit var contactButton : ImageView
+    private lateinit var panicButton : ImageView
 
     private val defaultTimeInterval:Long = 1000L
     private val defaultMaxWaitTime: Long = defaultTimeInterval * 5
-
     lateinit var mapboxMap: MapboxMap
     private lateinit var mapView: MapView
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var locationEngine: LocationEngine
     private lateinit var tfclassifier : SoundClassifier
 
-    // Variables needed to listen to location updates
+    var positionLatitude = "LATITUDE"
+    var positionLongtitude = "LONGTITUDE"
+
+    /** Listening to Location Updates */
     private val callback: MainActivityLocationCallback = MainActivityLocationCallback(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Mapbox token is configured here
-        // Set content view to where the maps is available
+        /** Mapbox Instances */
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         setContentView(R.layout.main)
         mapView = findViewById(R.id.mapView)
@@ -65,27 +64,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         /** Contact Button */
         contactButton = findViewById(R.id.bell)
         contactButton.setOnClickListener {
-            val fragmentContact = BottomSheet_Contact()
+            val fragmentContact = BottomSheetContact()
             fragmentContact.show(supportFragmentManager, "ContactBottomSheetDialog")
         }
         /** Settings Button */
+        /** Panic Button */
+        panicButton = findViewById(R.id.siren)
+        panicButton.setOnClickListener {
+            val sms = SMSAdapter()
+            sms.setContent(positionLatitude, positionLongtitude)
+            sms.sendToAllFriends(this)
+        }
     }
 
     /** Initialize Audio Classifer */
     private fun classifierInitializing(){
-        if(audioPermission().checkAudioPermission(this, this)){
+        if(PermissionsAdapter().check(this, this)){
             tfclassifier = SoundClassifier(this,
                 SoundClassifier.Options()).also {
                 it.lifecycleOwner = this
             }
             tfclassifier.start()
-        }
-
-        val labelName = tfclassifier.labelList[1]
-        tfclassifier.probabilities.observe(this) { resultMap ->
-            val probability = resultMap[labelName]
-            Log.d("Classifier", probability.toString())
-            val message = "I'm in distress, please call me, my position is "
+            val labelName = tfclassifier.labelList[1]
+            tfclassifier.probabilities.observe(this) { resultMap ->
+                val probability = resultMap[labelName]
+                Log.d("Classifier", probability.toString())
+                val message = "I'm in distress, please call me, my position is "
+            }
         }
     }
 
@@ -144,9 +149,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         locationEngine.requestLocationUpdates(request, callback, mainLooper)
         locationEngine.getLastLocation(callback)
     }
+
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
         TODO("Not yet implemented")
     }
+
     override fun onPermissionResult(granted: Boolean) {
         if (granted){
             enableLocationComponent(mapboxMap.style)
@@ -155,13 +162,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         Toast.makeText(this, "Permission Disabled", Toast.LENGTH_SHORT).show()
         finish()
     }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray){
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
 }
 
-// Location Callback
+/** Location Callback */
 class MainActivityLocationCallback(mainActivity: MainActivity):LocationEngineCallback<LocationEngineResult> {
     private var activityWeakReference: WeakReference<MainActivity>? = WeakReference(mainActivity)
     override fun onSuccess(result: LocationEngineResult) {
@@ -171,6 +179,9 @@ class MainActivityLocationCallback(mainActivity: MainActivity):LocationEngineCal
             val location: Location = result.lastLocation ?: return
             val stringData = "Lat : " + location.latitude.toString() +
                              " Long : " + location.longitude.toString()
+
+            activity.positionLatitude = location.latitude.toString()
+            activity.positionLongtitude = location.longitude.toString()
 
             // Show toast on screen
             //Toast.makeText(activity,  stringData, Toast.LENGTH_SHORT).show()

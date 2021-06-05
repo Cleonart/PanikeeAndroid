@@ -24,29 +24,30 @@ class ContactAdd : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /** View Element Initializing */
         setContentView(R.layout.activity_contact_add)
         contactName = findViewById(R.id.contact_add_contact_name)
         contactNumber = findViewById(R.id.contact_add_contact_number)
         contactSubmit = findViewById(R.id.contact_add_submit)
         contactCancel = findViewById(R.id.contact_add_cancel)
+
+        /** Get List of Frinds from SharedPreferences */
         val listFriends = FriendsPreferencesAdapter().get(this)
+
         contactSubmit.setOnClickListener {
+
+            /** Form Validation */
             val contactNameValue = contactName.text.toString()
             val contactNumberValue = contactNumber.text.toString()
+            if(contactName.length() == 0) { contactName.error = "Contact name need to be filled" }
+            if(contactNumber.length() == 0){ contactNumber.error = "Contact number need to be filled" }
 
-            if(contactName.length() == 0) {
-                contactName.error = "Contact name need to be filled"
-            }
-            if(contactNumber.length() == 0){
-                contactNumber.error = "Contact number need to be filled"
-            }
+            /** Submit New Friend to SharedPreferences */
             if (contactName.length() > 0 && contactNumber.length() > 0){
-                /** Submit to Shared Preferences */
-                val preferences = PreferenceManager.getDefaultSharedPreferences(this).edit()
                 listFriends.add(Contact(contactNameValue, contactNumberValue))
-                val jsonData = Gson().toJson(listFriends)
-                preferences.putString("friends", jsonData).apply()
-                Toast.makeText(this, "Success adding friend", Toast.LENGTH_SHORT).show()
+                FriendsPreferencesAdapter().update(this, "friends", listFriends)
+                Toast.makeText(this, "New Friend Added!", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -54,7 +55,5 @@ class ContactAdd : AppCompatActivity(){
         contactCancel.setOnClickListener {
             finish()
         }
-
-
     }
 }

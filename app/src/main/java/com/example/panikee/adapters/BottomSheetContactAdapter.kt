@@ -28,18 +28,6 @@ class BottomSheetContactAdapter(ctv : Activity?) : RecyclerView.Adapter<BottomSh
         return ViewHolder(v)
     }
 
-    /** Set Content Data from External */
-    fun setContentData(mutableList: MutableList<Contact>){
-        sampleData = mutableList
-    }
-
-    private fun deleteFriend(position : Int){
-        sampleData.removeAt(position)
-        FriendsPreferencesAdapter().update(act, "friends", sampleData)
-        Toast.makeText(act, "Success removing friend", Toast.LENGTH_SHORT).show()
-        notifyDataSetChanged()
-    }
-
     override fun onBindViewHolder(holder: BottomSheetContactAdapter.ViewHolder, position: Int) {
         holder.contactName.text = sampleData[position].contactName
         holder.contactNumber.text = sampleData[position].contactNumber
@@ -48,8 +36,22 @@ class BottomSheetContactAdapter(ctv : Activity?) : RecyclerView.Adapter<BottomSh
         }
     }
 
+    /** Get Size of Item */
     override fun getItemCount(): Int {
         return sampleData.size
+    }
+
+    /** Set Content Data from External */
+    fun setContentData(mutableList: MutableList<Contact>){
+        sampleData = mutableList
+    }
+
+    /** Delete and Remove Friend from Friends */
+    private fun deleteFriend(position : Int){
+        sampleData.removeAt(position)
+        FriendsPreferencesAdapter().update(act, "friends", sampleData)
+        Toast.makeText(act, "Success removing friend", Toast.LENGTH_SHORT).show()
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
