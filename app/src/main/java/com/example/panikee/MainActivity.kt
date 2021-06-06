@@ -3,6 +3,7 @@ package com.example.panikee
 // import all necessary plugins
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -10,34 +11,53 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.panikee.adapters.MapMarkerAdapter
 import com.example.panikee.adapters.PermissionsAdapter
+import com.example.panikee.adapters.RetrofitAdapter
 import com.example.panikee.adapters.SMSAdapter
-import com.example.panikee.audioProcessing.audioPermission
 import com.example.panikee.fragments.BottomSheetContact
+import com.example.panikee.model.EmergencyFacility
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
-import com.mapbox.mapboxsdk.maps.*
+import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
+import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.tensorflow.lite.examples.soundclassifier.SoundClassifier
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.lang.ref.WeakReference
+
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener{
 
     private lateinit var contactButton : ImageView
     private lateinit var panicButton : ImageView
 
+    /** Map Settings */
     private val defaultTimeInterval:Long = 1000L
     private val defaultMaxWaitTime: Long = defaultTimeInterval * 5
     lateinit var mapboxMap: MapboxMap
     private lateinit var mapView: MapView
+    lateinit var symbol: Symbol
+
+
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var locationEngine: LocationEngine
     private lateinit var tfclassifier : SoundClassifier
+
 
     var positionLatitude = "LATITUDE"
     var positionLongtitude = "LONGTITUDE"
@@ -96,9 +116,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
 
     override fun onMapReady(mbx: MapboxMap) {
         mapboxMap = mbx
-        mbx.setStyle(Style.LIGHT) {
-            enableLocationComponent(it)
-        }
+        val context = this
+        RetrofitAdapter.instance.getEmergencyFacility().enqueue(object : Callback<ArrayList<EmergencyFacility>>{
+            override fun onResponse(
+                call: Call<ArrayList<EmergencyFacility>>,
+                response: Response<ArrayList<EmergencyFacility>>
+            ) {
+                val mapMarkerAdapter = MapMarkerAdapter(context)
+                mapMarkerAdapter.setData(response.body()!!)
+                mbx.setStyle(Style.LIGHT) {
+                    enableLocationComponent(it)
+                    mapMarkerAdapter.create(mapView, mapboxMap, it)
+                }
+            }
+            override fun onFailure(call: Call<ArrayList<EmergencyFacility>>, t: Throwable) {
+                Log.d("tes","failed")
+                Log.d("tes", t.message.toString())
+            }
+        })
+
     }
 
     @SuppressLint("MissingPermission")

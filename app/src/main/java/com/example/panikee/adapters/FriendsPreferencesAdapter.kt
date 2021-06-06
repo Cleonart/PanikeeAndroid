@@ -16,6 +16,7 @@ class FriendsPreferencesAdapter {
         preferences.putString(keyName, Gson().toJson(data)).apply()
     }
 
+    /** Getting List of Friends from SharedPreferences */
     fun get(ctx : Activity?) : MutableList<Contact>{
         val preferences = PreferenceManager.getDefaultSharedPreferences(ctx)
         val jsonString = preferences.getString("friends", null)
