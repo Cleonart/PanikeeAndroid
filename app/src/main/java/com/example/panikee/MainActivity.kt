@@ -1,11 +1,12 @@
 package com.example.panikee
 
 // import all necessary plugins
-
 import android.annotation.SuppressLint
-import android.graphics.drawable.BitmapDrawable
 import android.location.Location
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
@@ -16,12 +17,13 @@ import com.example.panikee.adapters.PermissionsAdapter
 import com.example.panikee.adapters.RetrofitAdapter
 import com.example.panikee.adapters.SMSAdapter
 import com.example.panikee.fragments.BottomSheetContact
+import com.example.panikee.fragments.BottomSheetEmergencyFacility
+import com.example.panikee.fragments.BottomSheetPassword
 import com.example.panikee.model.EmergencyFacility
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
@@ -31,9 +33,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
-import com.mapbox.mapboxsdk.utils.BitmapUtils
+import kotlinx.coroutines.delay
 import org.tensorflow.lite.examples.soundclassifier.SoundClassifier
 import retrofit2.Call
 import retrofit2.Callback
@@ -46,18 +46,24 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
     private lateinit var contactButton : ImageView
     private lateinit var panicButton : ImageView
 
+    /** Panic Button Set */
+    private val clickUntilTrigger = 5
+    private val timeInterval : Long = 5000
+    private var numberOfClick = 0
+    private var previousClickTimestamp : Long = 0
+
+    // Start Siren
+    private lateinit var mediaPlayer: MediaPlayer
+
     /** Map Settings */
     private val defaultTimeInterval:Long = 1000L
     private val defaultMaxWaitTime: Long = defaultTimeInterval * 5
     lateinit var mapboxMap: MapboxMap
     private lateinit var mapView: MapView
     lateinit var symbol: Symbol
-
-
     private lateinit var permissionsManager: PermissionsManager
     private lateinit var locationEngine: LocationEngine
     private lateinit var tfclassifier : SoundClassifier
-
 
     var positionLatitude = "LATITUDE"
     var positionLongtitude = "LONGTITUDE"
@@ -75,8 +81,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
+        /** Init Media Player */
+        mediaPlayer = MediaPlayer.create(this, R.raw.siren)
+        mediaPlayer.isLooping = true
+
         buttonInitializing()
         classifierInitializing()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     /** Initialize Button With The Click Listener */
@@ -84,17 +98,74 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         /** Contact Button */
         contactButton = findViewById(R.id.bell)
         contactButton.setOnClickListener {
-            val fragmentContact = BottomSheetContact()
-            fragmentContact.show(supportFragmentManager, "ContactBottomSheetDialog")
+            contactButton.animate().apply {
+                duration = 100
+                scaleX(1.1f)
+                scaleY(1.1f)
+            }.withEndAction {
+                contactButton.animate().apply {
+                    duration=100
+                    scaleX(1.0f)
+                    scaleY(1.0f)
+                }
+                val fragmentContact = BottomSheetContact()
+                fragmentContact.show(supportFragmentManager, "ContactBottomSheetDialog")
+            }
         }
         /** Settings Button */
         /** Panic Button */
         panicButton = findViewById(R.id.siren)
         panicButton.setOnClickListener {
+            panicButton.animate().apply {
+                duration = 100
+                scaleX(1.1f)
+                scaleY(1.1f)
+            }.withEndAction {
+                panicButton.animate().apply {
+                    duration=100
+                    scaleX(1.0f)
+                    scaleY(1.0f)
+                }
+                checkEmergencyStatus()
+            }
+        }
+    }
+
+    private fun checkEmergencyStatus(){
+        val timeNow = System.currentTimeMillis()
+
+        /** Number of click add when timeNow - previousClickTimestamp */
+        if ((timeNow - previousClickTimestamp) < timeInterval){ numberOfClick++ }
+        else{
+            numberOfClick = 0
+            Log.d("tes", "Resetted")
+        }
+
+        if (numberOfClick > 5){
+
+            /** Set Number of click back to 0 */
+            numberOfClick = 0
+
+            /** Audio Player and Manager */
+            var volumeLevelCounter = 0
+            val audioManager : AudioManager = applicationContext.getSystemService(AUDIO_SERVICE) as AudioManager
+            while (volumeLevelCounter < 100){
+                audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_PLAY_SOUND)
+                volumeLevelCounter++
+            }
+            mediaPlayer.start()
+
+            /** SMS Adapter */
             val sms = SMSAdapter()
             sms.setContent(positionLatitude, positionLongtitude)
             sms.sendToAllFriends(this)
+
+            /** Open Password Input */
+            val fragmentContact = BottomSheetPassword(this)
+            fragmentContact.isCancelable = false
+            fragmentContact.show(supportFragmentManager, "PasswordBottomSheetDialog")
         }
+        previousClickTimestamp = timeNow
     }
 
     /** Initialize Audio Classifer */
@@ -122,7 +193,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
                 call: Call<ArrayList<EmergencyFacility>>,
                 response: Response<ArrayList<EmergencyFacility>>
             ) {
-                val mapMarkerAdapter = MapMarkerAdapter(context)
+                val mapMarkerAdapter = MapMarkerAdapter(context, supportFragmentManager)
                 mapMarkerAdapter.setData(response.body()!!)
                 mbx.setStyle(Style.LIGHT) {
                     enableLocationComponent(it)
@@ -186,9 +257,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         locationEngine.getLastLocation(callback)
     }
 
-    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        TODO("Not yet implemented")
-    }
+    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted){
@@ -210,7 +279,6 @@ class MainActivityLocationCallback(mainActivity: MainActivity):LocationEngineCal
     private var activityWeakReference: WeakReference<MainActivity>? = WeakReference(mainActivity)
     override fun onSuccess(result: LocationEngineResult) {
         val activity: MainActivity? = activityWeakReference?.get()
-
         if(activity != null){
             val location: Location = result.lastLocation ?: return
             val stringData = "Lat : " + location.latitude.toString() +
@@ -218,10 +286,6 @@ class MainActivityLocationCallback(mainActivity: MainActivity):LocationEngineCal
 
             activity.positionLatitude = location.latitude.toString()
             activity.positionLongtitude = location.longitude.toString()
-
-            // Show toast on screen
-            //Toast.makeText(activity,  stringData, Toast.LENGTH_SHORT).show()
-
             if(result.lastLocation != null){
                 activity.mapboxMap.locationComponent.forceLocationUpdate(result.lastLocation)
             }
@@ -238,4 +302,5 @@ class MainActivityLocationCallback(mainActivity: MainActivity):LocationEngineCal
             ).show()
         }
     }
+
 }
