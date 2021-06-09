@@ -19,10 +19,10 @@ class DialogFragment : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
 
-            builder.setTitle("Pilih layanan darurat")
-                .setItems(R.array.kejahatan_arrays, DialogInterface.OnClickListener { dialog, id ->
-                    Toast.makeText(context, resources.getStringArray(R.array.kejahatan_arrays)[id], Toast.LENGTH_SHORT).show()
-                })
+            //builder.setTitle("Pilih layanan darurat")
+            //    .setItems(R.array.kejahatan_arrays, DialogInterface.OnClickListener { dialog, id ->
+            //        Toast.makeText(context, resources.getStringArray(R.array.kejahatan_arrays)[id], Toast.LENGTH_SHORT).show()
+            //    }
 
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")

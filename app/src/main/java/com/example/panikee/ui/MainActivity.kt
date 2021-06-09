@@ -174,8 +174,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             mediaPlayer.start()
 
             // Dialog
-            val dialog = DialogFragment()
-            dialog.show(supportFragmentManager, "DialogFragment")
+            //val dialog = DialogFragment()
+            //dialog.show(supportFragmentManager, "DialogFragment")
 
             /** SMS Adapter */
             val sms = SMSAdapter()
