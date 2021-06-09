@@ -15,11 +15,23 @@
     <string name="desc_button_cog">Cog Button</string>
 
     <!-- API -->
-    <string name="mapbox_access_token">pk.eyJ1IjoienJlZGhhcmQiLCJhIjoiY2s4dGI0bzhxMDJjdzNsbGtmOXVtNDNvciJ9.kLnTWH6orAW2JwEn44b73g</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiYXNkZjkyIiwiYSI6ImNqem04eTJtajBpNjQzaW15dWVra3B2MmIifQ.Q_-FLZ_m4MP_vQtsXqFGWQ</string>
 
     <!-- Fragment Contact -->
     <string name="fragment_contact_name">Contact Name</string>
     <string name="fragment_contact_number">Contact Number</string>
     <string name="fragment_contact_button_remove">REMOVE</string>
 
+    <string-array name="kejahatan_arrays">
+        <item>KDRT - Kejahatan dalam Rumah tangga</item>
+        <item>PKS - Pemerkosaan</item>
+        <item>PCR - Pencurian</item>
+        <item>PCK - Penculikan</item>
+        <item>JBR - Jambret</item>
+        <item>KCL - Kecelakaan</item>
+    </string-array>
+
+    <string name="google_map_url">
+        I\'m in distress, please help me. find me at https://www.google.com/maps/place/%1$s,%2$s
+    </string>
 </resources>

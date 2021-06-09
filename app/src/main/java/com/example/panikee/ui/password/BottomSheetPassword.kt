@@ -1,4 +1,4 @@
-package com.example.panikee.fragments
+package com.example.panikee.ui.password
 
 import android.content.Context
 import android.content.Intent
@@ -35,10 +35,13 @@ class BottomSheetPassword(ctx : Context, mediaPlayer: MediaPlayer) : BottomSheet
         mediaPlayer = MediaPlayer.create(atx, R.raw.carlock)
         passwordButton = view.findViewById(R.id.passwordButton)
         passwordButton.setOnClickListener {
+
             mp.pause()
             mediaPlayer.start()
             Thread.sleep(3000)
             dismiss()
+
+
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.panikee.fragments
+package com.example.panikee.ui.emergency
 
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.panikee.R
 import com.example.panikee.adapters.BottomSheetContactAdapter
 import com.example.panikee.adapters.FriendsPreferencesAdapter
-import com.example.panikee.model.Contact
-import com.example.panikee.model.EmergencyFacility
+import com.example.panikee.data.vo.Contact
+import com.example.panikee.data.vo.EmergencyFacility
 import com.example.panikee.pages.ContactAdd
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
