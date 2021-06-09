@@ -19,6 +19,7 @@ import com.example.panikee.adapters.SMSAdapter
 import com.example.panikee.fragments.BottomSheetContact
 import com.example.panikee.fragments.BottomSheetEmergencyFacility
 import com.example.panikee.fragments.BottomSheetPassword
+import com.example.panikee.fragments.DialogFragment
 import com.example.panikee.model.EmergencyFacility
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
@@ -41,7 +42,7 @@ import retrofit2.Response
 import java.lang.ref.WeakReference
 
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener{
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, DialogFragment.OptionDialogListener {
 
     private lateinit var contactButton : ImageView
     private lateinit var panicButton : ImageView
@@ -91,6 +92,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
 
     override fun onResume() {
         super.onResume()
+    }
+
+    override fun onDialogItemsClicked() {
+
     }
 
     /** Initialize Button With The Click Listener */
@@ -155,15 +160,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             }
             mediaPlayer.start()
 
+            // Dialog
+            val dialog = DialogFragment()
+            dialog.show(supportFragmentManager, "DialogFragment")
+
             /** SMS Adapter */
             val sms = SMSAdapter()
             sms.setContent(positionLatitude, positionLongtitude)
             sms.sendToAllFriends(this)
 
             /** Open Password Input */
-            val fragmentContact = BottomSheetPassword(this)
-            fragmentContact.isCancelable = false
-            fragmentContact.show(supportFragmentManager, "PasswordBottomSheetDialog")
+//            val fragmentContact = BottomSheetPassword(this)
+//            fragmentContact.isCancelable = false
+//            fragmentContact.show(supportFragmentManager, "PasswordBottomSheetDialog")
         }
         previousClickTimestamp = timeNow
     }
