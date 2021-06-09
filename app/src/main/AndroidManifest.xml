@@ -26,5 +26,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".pages.ContactAdd"/>
+        <activity android:name=".pages.Register"/>
+        <activity android:name=".pages.Login"/>
     </application>
 </manifest>

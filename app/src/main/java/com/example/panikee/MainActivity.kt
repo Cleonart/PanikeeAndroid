@@ -2,11 +2,13 @@ package com.example.panikee
 
 // import all necessary plugins
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.location.Location
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.SystemClock
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
@@ -20,6 +22,9 @@ import com.example.panikee.fragments.BottomSheetContact
 import com.example.panikee.fragments.BottomSheetEmergencyFacility
 import com.example.panikee.fragments.BottomSheetPassword
 import com.example.panikee.model.EmergencyFacility
+import com.example.panikee.pages.ContactAdd
+import com.example.panikee.pages.Login
+import com.example.panikee.pages.Register
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -47,13 +52,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
     private lateinit var panicButton : ImageView
 
     /** Panic Button Set */
-    private val clickUntilTrigger = 5
-    private val timeInterval : Long = 5000
+    private val clickUntilTrigger = 8
+    private val timeInterval : Long = 2500
     private var numberOfClick = 0
     private var previousClickTimestamp : Long = 0
 
     // Start Siren
-    private lateinit var mediaPlayer: MediaPlayer
+    lateinit var mediaPlayer: MediaPlayer
 
     /** Map Settings */
     private val defaultTimeInterval:Long = 1000L
@@ -74,6 +79,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val loggedIn = preferences.getString("logged_in", null)
+        if (loggedIn == null){
+            val intent = Intent(this, Login::class.java)
+            finish()
+            startActivity(intent)
+        }
+
         /** Mapbox Instances */
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         setContentView(R.layout.main)
@@ -85,16 +98,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         mediaPlayer = MediaPlayer.create(this, R.raw.siren)
         mediaPlayer.isLooping = true
 
+        /** Initializing View Element */
         buttonInitializing()
-        classifierInitializing()
-    }
 
-    override fun onResume() {
-        super.onResume()
+        /** Initializing Classifier */
+        classifierInitializing()
     }
 
     /** Initialize Button With The Click Listener */
     private fun buttonInitializing(){
+
         /** Contact Button */
         contactButton = findViewById(R.id.bell)
         contactButton.setOnClickListener {
@@ -112,7 +125,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
                 fragmentContact.show(supportFragmentManager, "ContactBottomSheetDialog")
             }
         }
-        /** Settings Button */
+
         /** Panic Button */
         panicButton = findViewById(R.id.siren)
         panicButton.setOnClickListener {
@@ -141,7 +154,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             Log.d("tes", "Resetted")
         }
 
-        if (numberOfClick > 5){
+        if (numberOfClick > clickUntilTrigger){
 
             /** Set Number of click back to 0 */
             numberOfClick = 0
@@ -161,7 +174,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             sms.sendToAllFriends(this)
 
             /** Open Password Input */
-            val fragmentContact = BottomSheetPassword(this)
+            val fragmentContact = BottomSheetPassword(this, mediaPlayer)
             fragmentContact.isCancelable = false
             fragmentContact.show(supportFragmentManager, "PasswordBottomSheetDialog")
         }
@@ -179,8 +192,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             val labelName = tfclassifier.labelList[1]
             tfclassifier.probabilities.observe(this) { resultMap ->
                 val probability = resultMap[labelName]
-                Log.d("Classifier", probability.toString())
-                val message = "I'm in distress, please call me, my position is "
+                val probs = probability?.times(100)?.toInt()
+
+                if (probs?.toInt()!! > 90 && !mediaPlayer.isPlaying){
+                    Log.d("Classifier", "NO")
+                    checkEmergencyStatus()
+                }
+
             }
         }
     }
@@ -272,6 +290,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
 }
 
 /** Location Callback */

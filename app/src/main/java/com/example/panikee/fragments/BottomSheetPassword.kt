@@ -15,9 +15,10 @@ import android.widget.Button
 import com.example.panikee.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class BottomSheetPassword(ctx : Context) : BottomSheetDialogFragment(){
+class BottomSheetPassword(ctx : Context, mediaPlayer: MediaPlayer) : BottomSheetDialogFragment(){
 
     private var atx = ctx
+    private var mp = mediaPlayer
     private lateinit var passwordButton : Button
     private lateinit var mediaPlayer: MediaPlayer
 
@@ -31,14 +32,14 @@ class BottomSheetPassword(ctx : Context) : BottomSheetDialogFragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetStyle)
-
         mediaPlayer = MediaPlayer.create(atx, R.raw.carlock)
-        passwordButton = view.findViewById(R.id.emergencyButton)
+        passwordButton = view.findViewById(R.id.passwordButton)
         passwordButton.setOnClickListener {
+            mp.pause()
             mediaPlayer.start()
-            activity?.fragmentManager?.popBackStack()
+            Thread.sleep(3000)
+            dismiss()
         }
-
     }
 
     override fun onResume() {

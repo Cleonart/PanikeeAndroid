@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="35dp"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp">
+
+    <ImageView
+        android:id="@+id/registerImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/icon"
+        />
+
+    <TextView
+        android:id="@+id/registerTitle"
+        app:layout_constraintTop_toBottomOf="@id/registerImage"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:layout_marginTop="5dp"
+        android:textSize="28sp"
+        android:fontFamily="@font/passengersansblack"
+        android:textColor="@color/belize_hole"/>
+
+    <TextView
+        android:id="@+id/registerSubtitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/registerTitle"
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please register to start using panikee" />
+
+    <EditText
+        app:layout_constraintTop_toBottomOf="@id/registerSubtitle"
+        android:id="@+id/registerUsername"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:textSize="25sp"
+        android:fontFamily="@font/passengersanslight"/>
+
+    <EditText
+        app:layout_constraintTop_toBottomOf="@id/registerUsername"
+        android:background="@android:color/transparent"
+        android:id="@+id/registerPassword"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textSize="25sp"
+        android:fontFamily="@font/passengersanslight"/>
+
+    <EditText
+        app:layout_constraintTop_toBottomOf="@id/registerPassword"
+        android:background="@android:color/transparent"
+        android:id="@+id/registerPhone"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone Number"
+        android:textSize="25sp"
+        android:fontFamily="@font/passengersanslight"/>
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_marginTop="25dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/registerPhone"
+        android:backgroundTint="@color/belize_hole"
+        android:fontFamily="@font/passengersansbold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="REGISTER"/>
+
+    <TextView
+        android:id="@+id/registerToLogin"
+        android:text="Alredy have account yet? Login here"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fontFamily="@font/passengersanslight"
+        android:textSize="16sp"
+        android:layout_marginBottom="25dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
