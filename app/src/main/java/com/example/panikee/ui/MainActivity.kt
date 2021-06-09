@@ -178,13 +178,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             }
             mediaPlayer.start()
 
-<<<<<<< HEAD
-            // Dialog
-            //val dialog = DialogFragment()
-            //dialog.show(supportFragmentManager, "DialogFragment")
-
-=======
->>>>>>> 21cd9a345ccf8f39f1ca1f538c266a2eed84fd93
             /** SMS Adapter */
             val sms = SMSHelper(resources.getString(R.string.google_map_url, positionLatitude, positionLongtitude))
             sms.sendToAllFriends(this)
