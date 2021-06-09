@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
                 it.lifecycleOwner = this
             }
             tfclassifier.start()
-            val labelName = tfclassifier.labelList[1]
+            val labelName = tfclassifier.labelList[0]
             tfclassifier.probabilities.observe(this) { resultMap ->
                 val probability = resultMap[labelName]
                 val probs = probability?.times(100)?.toInt()
