@@ -16,16 +16,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.panikee.adapters.MapMarkerAdapter
 import com.example.panikee.adapters.PermissionsAdapter
-import com.example.panikee.adapters.RetrofitAdapter
-import com.example.panikee.adapters.SMSAdapter
-import com.example.panikee.fragments.BottomSheetContact
-import com.example.panikee.fragments.BottomSheetEmergencyFacility
-import com.example.panikee.fragments.BottomSheetPassword
-import com.example.panikee.fragments.DialogFragment
-import com.example.panikee.model.EmergencyFacility
 import com.example.panikee.pages.ContactAdd
 import com.example.panikee.pages.Login
 import com.example.panikee.pages.Register
+import com.example.panikee.data.api.ApiClient
+import com.example.panikee.utils.SMSHelper
+import com.example.panikee.ui.contact.BottomSheetContact
+import com.example.panikee.ui.emergency.BottomSheetEmergencyFacility
+import com.example.panikee.ui.password.BottomSheetPassword
+import com.example.panikee.ui.dialog.DialogFragment
+import com.example.panikee.data.vo.EmergencyFacility
 import com.mapbox.android.core.location.*
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -164,6 +164,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             /** Set Number of click back to 0 */
             numberOfClick = 0
 
+            // Dialog
+            val dialog = DialogFragment()
+            dialog.isCancelable = false
+            dialog.show(supportFragmentManager, "DialogFragment")
+
             /** Audio Player and Manager */
             var volumeLevelCounter = 0
             val audioManager : AudioManager = applicationContext.getSystemService(AUDIO_SERVICE) as AudioManager
@@ -173,13 +178,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             }
             mediaPlayer.start()
 
+<<<<<<< HEAD
             // Dialog
             //val dialog = DialogFragment()
             //dialog.show(supportFragmentManager, "DialogFragment")
 
+=======
+>>>>>>> 21cd9a345ccf8f39f1ca1f538c266a2eed84fd93
             /** SMS Adapter */
-            val sms = SMSAdapter()
-            sms.setContent(positionLatitude, positionLongtitude)
+            val sms = SMSHelper(resources.getString(R.string.google_map_url, positionLatitude, positionLongtitude))
             sms.sendToAllFriends(this)
 
             /** Open Password Input */
@@ -218,7 +225,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
     override fun onMapReady(mbx: MapboxMap) {
         mapboxMap = mbx
         val context = this
-        RetrofitAdapter.instance.getEmergencyFacility().enqueue(object : Callback<ArrayList<EmergencyFacility>>{
+        ApiClient.instance.getEmergencyFacility().enqueue(object : Callback<ArrayList<EmergencyFacility>>{
             override fun onResponse(
                 call: Call<ArrayList<EmergencyFacility>>,
                 response: Response<ArrayList<EmergencyFacility>>

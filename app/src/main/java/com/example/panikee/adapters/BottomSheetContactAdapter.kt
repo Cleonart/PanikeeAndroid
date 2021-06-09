@@ -11,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.panikee.R
-import com.example.panikee.model.Contact
+import com.example.panikee.data.vo.Contact
 import com.google.gson.Gson
 
 class BottomSheetContactAdapter(ctv : Activity?) : RecyclerView.Adapter<BottomSheetContactAdapter.ViewHolder>(){

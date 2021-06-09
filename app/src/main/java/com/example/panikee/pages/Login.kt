@@ -11,8 +11,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.panikee.MainActivity
 import com.example.panikee.R
-import com.example.panikee.model.Contact
-import com.example.panikee.model.User
+import com.example.panikee.data.vo.Contact
+import com.example.panikee.data.vo.User
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement

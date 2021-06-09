@@ -2,7 +2,7 @@ package com.example.panikee.adapters
 
 import android.app.Activity
 import android.preference.PreferenceManager
-import com.example.panikee.model.Contact
+import com.example.panikee.data.vo.Contact
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement

@@ -1,10 +1,7 @@
-package com.example.panikee.fragments
+package com.example.panikee.ui.contact
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,30 +12,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.panikee.R
 import com.example.panikee.adapters.BottomSheetContactAdapter
 import com.example.panikee.adapters.FriendsPreferencesAdapter
-import com.example.panikee.model.Contact
 import com.example.panikee.pages.ContactAdd
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
-import java.util.prefs.Preferences
 
-class BottomSheetContact : BottomSheetDialogFragment(){
+class BottomSheetContact : BottomSheetDialogFragment() {
 
     /** Adapter and Layout */
-    private lateinit var adapter : BottomSheetContactAdapter
-    private var layoutManager : RecyclerView.LayoutManager? = null
+    private lateinit var adapter: BottomSheetContactAdapter
+    private var layoutManager: RecyclerView.LayoutManager? = null
 
     /** View Element */
-    private lateinit var contactList : RecyclerView
-    private lateinit var contactZero : LinearLayout
-    private lateinit var contactAdd : Button
+    private lateinit var contactList: RecyclerView
+    private lateinit var contactZero: LinearLayout
+    private lateinit var contactAdd: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_contact, container, false)
     }
 
@@ -58,7 +50,7 @@ class BottomSheetContact : BottomSheetDialogFragment(){
         contactList.adapter = adapter
 
         /** Button to Intent ContactAdd */
-        contactAdd  = view.findViewById(R.id.fragment_contact_btn_add)
+        contactAdd = view.findViewById(R.id.fragment_contact_btn_add)
         contactAdd.setOnClickListener {
             val intent = Intent(activity, ContactAdd::class.java)
             startActivity(intent)
@@ -83,12 +75,11 @@ class BottomSheetContact : BottomSheetDialogFragment(){
      * Show the Recycler View is data exist
      * and hide recycler view when there's no data
      */
-    private fun setVisibility(){
-        if(adapter.itemCount > 0) {
+    private fun setVisibility() {
+        if (adapter.itemCount > 0) {
             contactZero.visibility = View.GONE
             contactList.visibility = View.VISIBLE
-        }
-        else{
+        } else {
             contactZero.visibility = View.VISIBLE
             contactList.visibility = View.GONE
         }

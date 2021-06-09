@@ -65,7 +65,7 @@
         android:lineHeight="16sp"
         android:text="INFO\nWhen you are in distress, these contacts will receive notification such as 'message' about your condition"/>
 
-    <!-- No Friends -->
+
     <LinearLayout
         android:id="@+id/contact_zero"
         app:layout_constraintTop_toBottomOf="@id/emergency_title"
@@ -103,7 +103,5 @@
             android:fontFamily="@font/passengersanssemibold"/>
 
     </LinearLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

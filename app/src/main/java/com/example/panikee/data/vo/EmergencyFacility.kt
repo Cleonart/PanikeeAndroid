@@ -1,4 +1,4 @@
-package com.example.panikee.model
+package com.example.panikee.data.vo
 
 import com.google.gson.annotations.SerializedName
 
