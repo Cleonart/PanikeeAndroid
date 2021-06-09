@@ -21,6 +21,7 @@ import com.example.panikee.adapters.SMSAdapter
 import com.example.panikee.fragments.BottomSheetContact
 import com.example.panikee.fragments.BottomSheetEmergencyFacility
 import com.example.panikee.fragments.BottomSheetPassword
+import com.example.panikee.fragments.DialogFragment
 import com.example.panikee.model.EmergencyFacility
 import com.example.panikee.pages.ContactAdd
 import com.example.panikee.pages.Login
@@ -46,7 +47,7 @@ import retrofit2.Response
 import java.lang.ref.WeakReference
 
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener{
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListener, DialogFragment.OptionDialogListener {
 
     private lateinit var contactButton : ImageView
     private lateinit var panicButton : ImageView
@@ -103,6 +104,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
 
         /** Initializing Classifier */
         classifierInitializing()
+    }
+
+    override fun onDialogItemsClicked() {
+
     }
 
     /** Initialize Button With The Click Listener */
@@ -168,6 +173,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             }
             mediaPlayer.start()
 
+            // Dialog
+            val dialog = DialogFragment()
+            dialog.show(supportFragmentManager, "DialogFragment")
+
             /** SMS Adapter */
             val sms = SMSAdapter()
             sms.setContent(positionLatitude, positionLongtitude)
@@ -177,6 +186,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PermissionsListene
             val fragmentContact = BottomSheetPassword(this, mediaPlayer)
             fragmentContact.isCancelable = false
             fragmentContact.show(supportFragmentManager, "PasswordBottomSheetDialog")
+//            val fragmentContact = BottomSheetPassword(this)
+//            fragmentContact.isCancelable = false
+//            fragmentContact.show(supportFragmentManager, "PasswordBottomSheetDialog")
         }
         previousClickTimestamp = timeNow
     }

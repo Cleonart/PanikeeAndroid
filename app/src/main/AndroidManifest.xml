@@ -20,13 +20,15 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Panikee.NoActionBar">
+        </activity>
+        <activity android:name=".pages.ContactAdd"/>
+        <activity android:name=".pages.Register"/>
+        <activity android:name=".pages.Login"/>
+        <activity android:name=".Blank">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".pages.ContactAdd"/>
-        <activity android:name=".pages.Register"/>
-        <activity android:name=".pages.Login"/>
     </application>
 </manifest>
